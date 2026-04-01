@@ -7,6 +7,7 @@ const COMMANDS = {
   feed: () => commands.feed(),
   reset: () => commands.reset(),
   event: (args) => commands.event(args),
+  live: () => commands.live(),
   'install-hooks': () => commands.installHooks(),
 };
 
@@ -15,6 +16,7 @@ const HELP = `
 
   Commands:
     status          Show companion sprite, stats, and dialogue
+    live            Open live companion window (run in a separate terminal)
     stats           Show evolution history and statistics
     log             Show recent events
     feed            Feed your companion (calms it down)
