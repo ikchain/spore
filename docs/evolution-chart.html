@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spore — Evolution Chart</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    color: #e0e0e0;
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #7c3aed, #06b6d4, #10b981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 60px;
+    letter-spacing: 0.1em;
+  }
+
+  .evolution-chain {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    position: relative;
+  }
+
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    flex-shrink: 0;
+    font-size: 1.5rem;
+    color: #333;
+  }
+
+  .stage-card {
+    flex: 1;
+    border: 1px solid #1a1a2e;
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .stage-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  .stage-card.spore { background: #0d0d15; }
+  .stage-card.spore::before { background: linear-gradient(90deg, #4a5568, #718096); }
+
+  .stage-card.sprite { background: #0d1117; }
+  .stage-card.sprite::before { background: linear-gradient(90deg, #38bdf8, #7dd3fc); }
+
+  .stage-card.wraith { background: #110d17; }
+  .stage-card.wraith::before { background: linear-gradient(90deg, #a78bfa, #c4b5fd); }
+
+  .stage-card.specter { background: #170d0d; }
+  .stage-card.specter::before { background: linear-gradient(90deg, #f97316, #fb923c); }
+
+  .stage-card.phantom { background: #0d1710; }
+  .stage-card.phantom::before { background: linear-gradient(90deg, #10b981, #34d399); }
+
+  .stage-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    margin-bottom: 20px;
+  }
+
+  .spore .stage-name { color: #718096; }
+  .sprite .stage-name { color: #38bdf8; }
+  .wraith .stage-name { color: #a78bfa; }
+  .specter .stage-name { color: #f97316; }
+  .phantom .stage-name { color: #10b981; }
+
+  .sprite-art {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.3;
+    white-space: pre;
+    margin: 16px 0 24px;
+    min-height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .spore .sprite-art { color: #a0aec0; }
+  .sprite .sprite-art { color: #7dd3fc; }
+  .wraith .sprite-art { color: #c4b5fd; }
+  .specter .sprite-art { color: #fdba74; }
+  .phantom .sprite-art { color: #6ee7b7; }
+
+  .personality {
+    font-size: 0.8rem;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 20px;
+    min-height: 40px;
+  }
+
+  .requirements {
+    border-top: 1px solid #1a1a2e;
+    padding-top: 16px;
+    margin-top: auto;
+  }
+
+  .req-title {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: #555;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .req-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #999;
+    margin: 4px 0;
+  }
+
+  .req-item .highlight {
+    color: #e0e0e0;
+    font-weight: 700;
+  }
+
+  .dialogue {
+    margin-top: 16px;
+    font-size: 0.75rem;
+    color: #666;
+    font-style: italic;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+  }
+
+  /* Stats section */
+  .stats-section {
+    margin-top: 80px;
+  }
+
+  .stats-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    margin-bottom: 40px;
+    color: #ccc;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+
+  .stat-card {
+    border: 1px solid #1a1a2e;
+    border-radius: 12px;
+    padding: 20px 16px;
+    text-align: center;
+  }
+
+  .stat-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+
+  .stat-desc {
+    font-size: 0.7rem;
+    color: #888;
+    line-height: 1.5;
+  }
+
+  .stat-card.debugging .stat-name { color: #4ade80; }
+  .stat-card.patience .stat-name { color: #22d3ee; }
+  .stat-card.chaos .stat-name { color: #f87171; }
+  .stat-card.wisdom .stat-name { color: #c084fc; }
+  .stat-card.snark .stat-name { color: #facc15; }
+
+  .footer {
+    text-align: center;
+    margin-top: 80px;
+    padding: 40px 0;
+    border-top: 1px solid #1a1a2e;
+  }
+
+  .footer-text {
+    font-size: 0.8rem;
+    color: #444;
+    font-style: italic;
+  }
+
+  .footer-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    color: #555;
+  }
+
+  @media (max-width: 900px) {
+    .evolution-chain {
+      flex-direction: column;
+      gap: 12px;
+    }
+    .arrow {
+      width: auto;
+      height: 30px;
+      transform: rotate(90deg);
+    }
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>SPORE</h1>
+  <p class="subtitle">evolution chart — raise a ghost in your terminal</p>
+
+  <div class="evolution-chain">
+
+    <div class="stage-card spore">
+      <div class="stage-name">SPORE</div>
+      <div class="sprite-art">
+    .·.
+   (   )
+    `·'</div>
+      <div class="personality">Innocent. Confused.<br>Just arrived in the terminal.</div>
+      <div class="requirements">
+        <div class="req-title">Requirements</div>
+        <div class="req-item"><span class="highlight">Install it</span></div>
+        <div class="req-item">Starting stage</div>
+      </div>
+      <div class="dialogue">"What's a segfault? Is it like an earthquake but for code?"</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="stage-card sprite">
+      <div class="stage-name">SPRITE</div>
+      <div class="sprite-art">
+    ∴ ∵
+   ╱ ◯ ╲
+  │ ═══ │
+   ╲   ╱
+    `─'</div>
+      <div class="personality">Playful. Curious.<br>Starting to understand code.</div>
+      <div class="requirements">
+        <div class="req-title">Requirements</div>
+        <div class="req-item">Any <span class="highlight">1 stat ≥ 20</span></div>
+        <div class="req-item">Wisdom <span class="highlight">≥ 10</span></div>
+      </div>
+      <div class="dialogue">"Another commit! I'm starting to understand this... I think."</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="stage-card wraith">
+      <div class="stage-name">WRAITH</div>
+      <div class="sprite-art">
+   ╭─╮
+  ─┤◈├─
+  ╭┤ ├╮
+  │╰─╯│
+  ╰┬─┬╯
+   │ │</div>
+      <div class="personality">Opinionated. Dry wit.<br>Has seen your code. Has thoughts.</div>
+      <div class="requirements">
+        <div class="req-title">Requirements</div>
+        <div class="req-item"><span class="highlight">3+ stats ≥ 40</span></div>
+        <div class="req-item">Wisdom <span class="highlight">≥ 25</span></div>
+      </div>
+      <div class="dialogue">"I've seen your code. I have... opinions."</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="stage-card specter">
+      <div class="stage-name">SPECTER</div>
+      <div class="sprite-art">
+  ╔═══╗
+ ║ ◉ ◉ ║
+ ║  ▽  ║
+ ╚═╤═╤═╝
+ ░═╡ ╞═░
+ ░ │ │ ░
+   ╧ ╧</div>
+      <div class="personality">Sardonic. Experienced.<br>Remembers your worst days.</div>
+      <div class="requirements">
+        <div class="req-title">Requirements</div>
+        <div class="req-item"><span class="highlight">4+ stats ≥ 60</span></div>
+        <div class="req-item">Wisdom <span class="highlight">≥ 50</span></div>
+        <div class="req-item">Age <span class="highlight">≥ 30 days</span></div>
+      </div>
+      <div class="dialogue">"I've outlived three of your TODO comments."</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="stage-card phantom">
+      <div class="stage-name">PHANTOM</div>
+      <div class="sprite-art">
+  ░░▓▓░░
+ ░▓╔══╗▓░
+ ▓║ ◆◆ ║▓
+ ▓║ ═══ ║▓
+ ░▓╚══╝▓░
+  ░░▓▓░░
+   ░░░░</div>
+      <div class="personality">Transcendent. Existential.<br>Mildly condescending. Rarely impressed.</div>
+      <div class="requirements">
+        <div class="req-title">Requirements</div>
+        <div class="req-item"><span class="highlight">ALL stats ≥ 75</span></div>
+        <div class="req-item">Wisdom <span class="highlight">≥ 90</span></div>
+        <div class="req-item">Age <span class="highlight">≥ 90 days</span></div>
+      </div>
+      <div class="dialogue">"I've transcended the need for semicolons. You haven't."</div>
+    </div>
+
+  </div>
+
+  <!-- Stats Section -->
+  <div class="stats-section">
+    <div class="stats-title">THE FIVE STATS</div>
+    <div class="stats-grid">
+      <div class="stat-card debugging">
+        <div class="stat-icon">🔍</div>
+        <div class="stat-name">DEBUGGING</div>
+        <div class="stat-desc">Rises when you fix bugs and pass tests. Your reputation as a problem solver.</div>
+      </div>
+      <div class="stat-card patience">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-name">PATIENCE</div>
+        <div class="stat-desc">Steady commits, focused sessions. Falls hard during marathon no-commit runs.</div>
+      </div>
+      <div class="stat-card chaos">
+        <div class="stat-icon">🌀</div>
+        <div class="stat-name">CHAOS</div>
+        <div class="stat-desc">Rapid changes, error storms, long sessions. The turbulence of your workflow.</div>
+      </div>
+      <div class="stat-card wisdom">
+        <div class="stat-icon">📜</div>
+        <div class="stat-name">WISDOM</div>
+        <div class="stat-desc">Never decreases. Grows slowly with time and commits. Can't be grinded.</div>
+      </div>
+      <div class="stat-card snark">
+        <div class="stat-icon">💀</div>
+        <div class="stat-name">SNARK</div>
+        <div class="stat-desc">Your companion's sass level. Rises with repeated errors. Tamed by feeding.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-logo">.·. spore .·.</div>
+    <div class="footer-text">born in a terminal. raised by commits.</div>
+  </div>
+
+</div>
+
+</body>
+</html>
