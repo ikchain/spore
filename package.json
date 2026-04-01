@@ -1,0 +1,41 @@
+{
+  "name": "spore-cli",
+  "version": "1.0.0",
+  "description": "An evolutionary terminal companion that grows with your development habits",
+  "main": "src/index.js",
+  "bin": {
+    "spore": "./bin/spore.js"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:coverage": "c8 --check-coverage --lines 80 node --test test/*.test.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "cli",
+    "terminal",
+    "companion",
+    "developer-tools",
+    "ascii-art",
+    "evolution",
+    "pet"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "c8": "^10.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ikchain/spore.git"
+  }
+}
